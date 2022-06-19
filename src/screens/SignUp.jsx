@@ -18,6 +18,7 @@ export default function SignUp({ navigation }) {
     const [age, setAge] = useState("")
     
     const signup = async () => {
+        setLoading(true)
         try {
             const result = await createUserWithEmailAndPassword(auth, email, password);
              await addDoc(collection(db, "users"), {
@@ -27,14 +28,18 @@ export default function SignUp({ navigation }) {
                 age: age,
                 uid:result.user.uid
             })
-            console.log(result)
+            // console.log(result)
+             setLoading(false)
         }
+       
         catch(error) {
             console.log("error", error);
             showMessage({
                 message: "error!!",
                 type:"danger"
             })
+            
+                setLoading(false)
         }
     }
   return (
@@ -46,9 +51,9 @@ export default function SignUp({ navigation }) {
           />
           <Text style={styles.notes}>Never Forget Your sign up</Text>
           <View style={{paddingHorizontal:20,paddingVertical:20}}>
-              <Input placeholder="Your Email" onChangeText={(text)=>setEmail(text)}/>
+                  <Input placeholder="Your Email" onChangeText={(text) => setEmail(text)} autoCapitalize={ "none"} />
                <Input placeholder="Password" secureTextEntry onChangeText={(text)=>setPassword(text)}/>
-              <Input placeholder='Full Name'  onChangeText={(text)=>setName(text)}/>
+              <Input placeholder='Full Name' autoCapitalize={"words"} onChangeText={(text)=>setName(text)}/>
                   <Input placeholder=' Your age'onChangeText={(text)=>setAge(text)} />
                    <View style={{marginVertical:20}}>
                       <Text>select gender</Text>
