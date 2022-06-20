@@ -1,17 +1,20 @@
+import { useNavigation } from "@react-navigation/native";
 import { addDoc, collection } from "firebase/firestore";
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { db } from '../../App';
 import Button from '../components/Button';
 import Input from '../components/Input';
 
 const noteColorOptions = ["red", "green", "blue"];
-export default function Create({user}) {
+export default function Create({user,navigation}) {
   const [loading,setLoading]=useState(false)
   const [title,setTitle]=useState("")
   const [description, setDescription] = useState("")
   const [noteColor, setNoteColor] = useState("blue")
+  const navigationUse=useNavigation()
   const onPressCreate = async () => {
      setLoading(true)
     try {
@@ -21,11 +24,16 @@ export default function Create({user}) {
         description: description,
         color: noteColor,
                 
-        uid: user.uid
+        
       });
       
     console.log(result)
       setLoading(false)
+      showMessage({
+        message: "note created successfully",
+        type:"success"
+      })
+    navigationUse.navigate("Home")
     } catch (err){
       console.log("error", err)
       setLoading(false)
@@ -34,7 +42,7 @@ export default function Create({user}) {
   return (
     <SafeAreaView>
       
-        <Text style={{textAlign:"center",fontWeight:"900",fontSize:20}}>Create Story</Text>
+        <Text style={{textAlign:"center",fontWeight:"900",fontSize:20}}>Edit</Text>
       
       <Input placeholder="title" onChangeText={(text) => setTitle(text)} autoCapitalize={ "none"} />
       <Input placeholder="Description" multiline={true} onChangeText={(text) => setDescription(text)} autoCapitalize={ "none"} />

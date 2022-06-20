@@ -1,12 +1,13 @@
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from 'firebase/firestore';
 import React from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import FlashMessage from "react-native-flash-message";
 import Create from "./src/screens/Create";
+import Edit from "./src/screens/Edit";
 import Home from "./src/screens/Home";
 import SignIn from "./src/screens/SignIn";
 import SignUp from "./src/screens/SignUp";
@@ -24,42 +25,40 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app)
 export const db=getFirestore(app)
 
-export default function App({navigation}) {
-  const [user,setUser]=React.useState(null)
-  const [loading,setLoading]=React.useState(true)
+export default function App({ navigation }) {
+  const [user, setUser] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
   const Stack = createNativeStackNavigator();
+  // React.useEffect(() => {
+  //   signOut(auth)
+  // },[])
   React.useEffect(() => {
-    signOut(auth)
-  },[])
-  React.useEffect(() => {
-    const authSubscription = onAuthStateChanged(auth,(user) => {
+    const authSubscription = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setLoading(false)
+        setLoading(false);
         setUser(user);
-      }
-      else {
-        setUser(null)
+      } else {
+        setUser(null);
         setLoading(false);
       }
-     
-    })
+    });
     return authSubscription;
-  }, [])
-  
+  }, []);
+
   if (loading) {
     return (
-      <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-        <ActivityIndicator color="blue" size="large"/>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator color="blue" size="large" />
       </View>
-    )
+    );
   }
   const appTheme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background:"#fff"
-    }
-  }
+      background: "#fff",
+    },
+  };
 
   return (
     <NavigationContainer theme={appTheme}>
@@ -69,12 +68,11 @@ export default function App({navigation}) {
             <Stack.Screen name="Home">
               {(...props) => <Home {...props} user={user} />}
             </Stack.Screen>
-            {/* <Stack.Screen name="Edit">
-              {(...props) => <Edit {...props} user={user} />}
-            </Stack.Screen> */}
+
             <Stack.Screen name="Create">
               {(...props) => <Create {...props} user={user} />}
             </Stack.Screen>
+            <Stack.Screen name="Edit" component={Edit} user={user} />
           </>
         ) : (
           <>
